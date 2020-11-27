@@ -1,9 +1,10 @@
 import pandas as pd
+from sklearn import tree
+import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score
 
 # load data
 dataset = pd.read_csv("../data/student-por.csv", sep=";")
-
-print(dataset.head())
 
 
 def prep_data():
@@ -33,4 +34,21 @@ def prep_data():
 
 
 prep_data()
-print(dataset.head())
+X = dataset.loc[:, dataset.columns != 'G3']
+Y = dataset['G3']
+
+
+def tree_build(split_samples: int = 25):
+    tree_plot = tree.DecisionTreeClassifier(min_samples_split=split_samples)
+    tree_plot.fit(X, Y)
+    plt.figure()
+    tree.plot_tree(tree_plot, class_names=True)
+    plt.show()
+
+    predict_list = tree_plot.predict(X)
+
+    accuracy = accuracy_score(Y, predict_list)
+    print(accuracy)
+
+
+tree_build()
