@@ -1,7 +1,13 @@
+import numpy as np
 import pandas as pd
 from sklearn import tree
 import matplotlib.pyplot as plt
+from sklearn.metrics import roc_auc_score
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from pruning import Pruning
 
 # load data
 dataset = pd.read_csv("../data/student-por.csv", sep=";")
@@ -33,22 +39,15 @@ def prep_data():
     dataset['romantic'].replace({'no': 0, 'yes': 1}, inplace=True)
 
 
-prep_data()
-X = dataset.loc[:, dataset.columns != 'G3']
-Y = dataset['G3']
+def random_forest(x_placeholder, y_placeholder, **kwarg):
+    clf = RandomForestClassifier(kwargs)
+    clf.fit(x_placeholder, y_placeholder)
 
 
-def tree_build(split_samples: int = 25):
-    tree_plot = tree.DecisionTreeClassifier(min_samples_split=split_samples)
-    tree_plot.fit(X, Y)
-    plt.figure()
-    tree.plot_tree(tree_plot, class_names=True)
-    plt.show()
+def main():
+    prep_data()
+    X = dataset.loc[:, dataset.columns != 'G3']
+    y = dataset['G3']
+    Pruning.random_forest_hyper_parameters(X, y)
 
-    predict_list = tree_plot.predict(X)
-
-    accuracy = accuracy_score(Y, predict_list)
-    print(accuracy)
-
-
-tree_build()
+main()
