@@ -14,10 +14,13 @@ class Pruning:
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
-        param_grid = {'max_depth': np.arange(3, 10), 'min_samples_split': [10, 25, 50, 75], 'min_samples_leaf': [5, 10, 15, 20, 25]}
+        param_grid = {'max_depth': np.arange(3, 10), 'min_samples_split': [10, 15, 25, 35, 50, 75],
+                      'min_samples_leaf': [5, 10, 15, 20, 25]}
 
         random_forest_grid = GridSearchCV(RandomForestClassifier(), param_grid)
 
         random_forest_grid.fit(X_train, y_train)
 
         print('Best params are: ' + str(random_forest_grid.best_params_))
+
+        return random_forest_grid.best_params_
