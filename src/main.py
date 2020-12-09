@@ -13,8 +13,6 @@ from pruning import Pruning
 dataset = pd.read_csv("../data/student-por.csv", sep=";")
 dataset2 = pd.read_csv("../data/student-mat.csv", sep=";")
 
-holdout_data = []
-
 
 def prep_data(data_set):
     """
@@ -40,7 +38,7 @@ def prep_data(data_set):
     data_set['higher'].replace({'no': 0, 'yes': 1}, inplace=True)
     data_set['internet'].replace({'no': 0, 'yes': 1}, inplace=True)
     data_set['romantic'].replace({'no': 0, 'yes': 1}, inplace=True)
-    # TODO: change G3 to binary passed or not (need to verify)
+    # TODO:  Possibly 4 numerical values to see which students barely passed any see why.
     data_set['G3'].replace({0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0,
                            10: 1, 11: 1, 12: 1, 13: 1, 14: 1, 15: 1, 16: 1, 17: 1, 18: 1, 19: 1, 20: 1}, inplace=True)
 
@@ -65,9 +63,12 @@ def main():
     prep_data(dataset2)
     X2 = dataset2.loc[:, dataset2.columns != 'G3']
     y2 = dataset2['G3']
+
     X_train, X_test, y_train, y_test = split_data(X, y, 0.2)
 
     # Tune the hyper parameters & fit the forrest.
+    # TODO: 2 times cross-validation
+    # TODO: Possibly make 2 models (1 with G1,G2 and one without)
     kargs = Pruning.random_forest_hyper_parameters(X_train, y_train)
     forest = random_forest(X_train, y_train, **kargs)
 
