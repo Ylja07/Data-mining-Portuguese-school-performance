@@ -4,6 +4,7 @@ from sklearn import tree
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import accuracy_score
+from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
@@ -26,6 +27,21 @@ def split_data(x_data, y_data, test_size):
     return X_train, X_test, y_train, y_test
 
 
+def neural(x_placeholder, y_placeholder, **kwarg):
+    mlp = MLPClassifier(**kwarg)
+    mlp.fit(x_placeholder, y_placeholder)
+    return mlp
+
+
+def predict_score(clf, x1, x2, y1, y2, clf_identifier):
+    predict_list = clf.predict(x1)
+    accuracy = accuracy_score(y1, predict_list)
+    predict_list2 = clf.predict(x2)
+    accuracy2 = accuracy_score(y2, predict_list2)
+    print(clf_identifier + " trained set(por): " + str(accuracy))
+    print(clf_identifier + " math set: " + str(accuracy2))
+
+
 def main():
     # Prep data for usage.
     data = DataPreparation(dataset)
@@ -40,17 +56,17 @@ def main():
 
     X_train, X_test, y_train, y_test = split_data(X, y, 0.2)
 
-    # TODO: 2 times cross-validation
-    kargs = Pruning.random_forest_hyper_parameters(X_train, y_train)
-    forest = random_forest(X_train, y_train, **kargs)
+    pruning = Pruning(cv=None, X=X_train, y=y_train)
+
+    forest_kargs = pruning.random_forest_hyper_parameters()
+    forest = random_forest(X_train, y_train, **forest_kargs)
+
+    mlp_kargs = pruning.mlp_hyper_parameters()
+    mlp = neural(X_train, y_train, **mlp_kargs)
 
     # Get accuracy
-    predict_list = forest.predict(X_test)
-    accuracy = accuracy_score(y_test, predict_list)
-    predict_list2 = forest.predict(X2)
-    accuracy2 = accuracy_score(y2, predict_list2)
-    print("trained set(por): " + str(accuracy))
-    print("math set: " + str(accuracy2))
+    predict_score(forest, X_test, X2, y_test, y2, "Random Forest")
+    predict_score(mlp, X_test, X2, y_test, y2, "MLP")
 
 
 main()
