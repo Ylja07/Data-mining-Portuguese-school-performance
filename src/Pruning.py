@@ -11,7 +11,6 @@ from sklearn.model_selection import train_test_split
 
 class Pruning:
     def random_forest_hyper_parameters(X, y):
-
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
         param_grid = {'max_depth': np.arange(3, 10), 'min_samples_split': [10, 15, 25, 35, 50, 75],
