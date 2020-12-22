@@ -73,7 +73,7 @@ def run(dataset_por, dataset_math, exclude, name):
 
     # Get accuracy
     predict_score(forest, X_test, X2, y_test, y2, "Random Forest " + name)
-    predict_score(mlp, X_test, X2, y_test, y2, "MLP with only G1 " + name)
+    predict_score(mlp, X_test, X2, y_test, y2, "MLP " + name)
 
 
 def main():
