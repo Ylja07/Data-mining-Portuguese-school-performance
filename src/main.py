@@ -10,6 +10,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from Pruning import Pruning
 from DataPreparation import DataPreparation
+import time
+import concurrent.futures
 
 # load data
 dataset = pd.read_csv("../data/student-por.csv", sep=";")
@@ -42,21 +44,26 @@ def predict_score(clf, x1, x2, y1, y2, clf_identifier):
     print(clf_identifier + " math set: " + str(accuracy2))
 
 
-def main():
-    # Prep data for usage.
-    data = DataPreparation(dataset)
-    por = data.set_feature_values()
-    X = por.loc[:, por.columns != 'G3']
-    y = por['G3']
+def prep_multi_run(basic_G3=True):
+    data_por = DataPreparation(dataset)
+    por = data_por.set_feature_values(basic_G3)
+    data_math = DataPreparation(dataset2)
+    math = data_math.set_feature_values(basic_G3)
 
-    data2 = DataPreparation(dataset2)
-    mat = data2.set_feature_values()
-    X2 = mat.loc[:, mat.columns != 'G3']
-    y2 = mat['G3']
+    return por, math
+
+
+def run(dataset_por, dataset_math, exclude, name):
+    # Prep data for usage.
+    X = dataset_por.drop(exclude, axis=1)
+    y = dataset_por['G3']
+
+    X2 = dataset_math.drop(exclude, axis=1)
+    y2 = dataset_math['G3']
 
     X_train, X_test, y_train, y_test = split_data(X, y, 0.2)
 
-    pruning = Pruning(cv=None, X=X_train, y=y_train)
+    pruning = Pruning(scoring='roc_auc', X=X_train, y=y_train)
 
     forest_kargs = pruning.random_forest_hyper_parameters()
     forest = random_forest(X_train, y_train, **forest_kargs)
@@ -65,8 +72,15 @@ def main():
     mlp = neural(X_train, y_train, **mlp_kargs)
 
     # Get accuracy
-    predict_score(forest, X_test, X2, y_test, y2, "Random Forest")
-    predict_score(mlp, X_test, X2, y_test, y2, "MLP")
+    predict_score(forest, X_test, X2, y_test, y2, "Random Forest " + name)
+    predict_score(mlp, X_test, X2, y_test, y2, "MLP with only G1 " + name)
+
+
+def main():
+    portuguese, Math = prep_multi_run()
+    run(portuguese, Math, ['G3'], 'with G1 and G2')
+    run(portuguese, Math, ['G2', 'G3'], 'with G1 and no G2')
+    run(portuguese, Math, ['G1', 'G2', 'G3'], 'with no G1 and G2')
 
 
 main()

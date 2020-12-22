@@ -12,8 +12,8 @@ import concurrent.futures
 
 
 class Pruning:
-    def __init__(self, cv, X, y):
-        self.cv = cv
+    def __init__(self, scoring, X, y):
+        self.scoring = scoring
         self.X = X
         self.y = y
 
@@ -22,7 +22,7 @@ class Pruning:
                       'min_samples_leaf': [5, 10, 15, 20, 25]}
 
         # Think about using other ways to rate the data instead of the standard accuracy.
-        random_forest_grid = GridSearchCV(RandomForestClassifier(), param_grid, cv=self.cv).fit(self.X, self.y)
+        random_forest_grid = GridSearchCV(RandomForestClassifier(), param_grid, scoring=self.scoring).fit(self.X, self.y)
 
         print('Best params for random forrest are: ' + str(random_forest_grid.best_params_))
 
@@ -32,7 +32,6 @@ class Pruning:
         best_mlp = None
         # Multithreading awesomeness 😎
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            print("Running .....")
             mlp_adam = executor.submit(self.__adam)
             mlp_sgd = executor.submit(self.__sgd)
             mlp_lbfgs = executor.submit(self.__lbfgs)
@@ -53,21 +52,21 @@ class Pruning:
         return best_mlp.best_params_
 
     def __adam(self):
-        adam = {'activation': ['identity', 'logistic', 'tanh', 'relu'], 'max_iter': [3000],
+        adam = {'activation': ['identity', 'logistic', 'tanh', 'relu'], 'max_iter': [9000],
                 'hidden_layer_sizes': [(1,), (2,), (3,), (4,), (5,), (6,), (7,), (8,), (9,), (10,), (11,), (12,),
                                        (13,), (14,), (15,), (16,), (17,), (18,), (19,), (20,), (21,)],
                 'solver': ['adam']}
         return GridSearchCV(MLPClassifier(), adam).fit(self.X, self.y)
 
     def __sgd(self):
-        sgd = {'activation': ['identity', 'logistic', 'tanh', 'relu'], 'max_iter': [3000],
+        sgd = {'activation': ['identity', 'logistic', 'tanh', 'relu'], 'max_iter': [9000],
                'hidden_layer_sizes': [(1,), (2,), (3,), (4,), (5,), (6,), (7,), (8,), (9,), (10,), (11,), (12,),
                                       (13,), (14,), (15,), (16,), (17,), (18,), (19,), (20,), (21,)],
                'solver': ['sgd'], 'learning_rate': ['constant', 'invscaling', 'adaptive']}
         return GridSearchCV(MLPClassifier(), sgd).fit(self.X, self.y)
 
     def __lbfgs(self):
-        lbfgs = {'activation': ['identity', 'logistic', 'tanh', 'relu'], 'max_iter': [3000],
+        lbfgs = {'activation': ['identity', 'logistic', 'tanh', 'relu'], 'max_iter': [9000],
                  'hidden_layer_sizes': [(1,), (2,), (3,), (4,), (5,), (6,), (7,), (8,), (9,), (10,), (11,), (12,),
                                         (13,), (14,), (15,), (16,), (17,), (18,), (19,), (20,), (21,)],
                  'solver': ['lbfgs']}
