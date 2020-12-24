@@ -56,18 +56,18 @@ class Pruning:
                 'hidden_layer_sizes': [(1,), (2,), (3,), (4,), (5,), (6,), (7,), (8,), (9,), (10,), (11,), (12,),
                                        (13,), (14,), (15,), (16,), (17,), (18,), (19,), (20,), (21,)],
                 'solver': ['adam']}
-        return GridSearchCV(MLPClassifier(), adam).fit(self.X, self.y)
+        return GridSearchCV(MLPClassifier(), adam, scoring=self.scoring).fit(self.X, self.y)
 
     def __sgd(self):
         sgd = {'activation': ['identity', 'logistic', 'tanh', 'relu'], 'max_iter': [9000],
                'hidden_layer_sizes': [(1,), (2,), (3,), (4,), (5,), (6,), (7,), (8,), (9,), (10,), (11,), (12,),
                                       (13,), (14,), (15,), (16,), (17,), (18,), (19,), (20,), (21,)],
                'solver': ['sgd'], 'learning_rate': ['constant', 'invscaling', 'adaptive']}
-        return GridSearchCV(MLPClassifier(), sgd).fit(self.X, self.y)
+        return GridSearchCV(MLPClassifier(), sgd, scoring=self.scoring).fit(self.X, self.y)
 
     def __lbfgs(self):
         lbfgs = {'activation': ['identity', 'logistic', 'tanh', 'relu'], 'max_iter': [9000],
                  'hidden_layer_sizes': [(1,), (2,), (3,), (4,), (5,), (6,), (7,), (8,), (9,), (10,), (11,), (12,),
                                         (13,), (14,), (15,), (16,), (17,), (18,), (19,), (20,), (21,)],
                  'solver': ['lbfgs']}
-        return GridSearchCV(MLPClassifier(), lbfgs).fit(self.X, self.y)
+        return GridSearchCV(MLPClassifier(), lbfgs, scoring=self.scoring).fit(self.X, self.y)

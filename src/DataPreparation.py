@@ -35,7 +35,6 @@ class DataPreparation:
         self.dataSet['higher'].replace({'no': 0, 'yes': 1}, inplace=True)
         self.dataSet['internet'].replace({'no': 0, 'yes': 1}, inplace=True)
         self.dataSet['romantic'].replace({'no': 0, 'yes': 1}, inplace=True)
-        # TODO:  Possibly 4 numerical values to see which students barely passed any see why.
 
         if basic_G3:
             self.dataSet['G3'].replace({0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0,
