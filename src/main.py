@@ -10,8 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from Pruning import Pruning
 from DataPreparation import DataPreparation
-import time
-import concurrent.futures
+
 
 # load data
 dataset = pd.read_csv("../data/student-por.csv", sep=";")
@@ -21,6 +20,16 @@ dataset2 = pd.read_csv("../data/student-mat.csv", sep=";")
 def random_forest(x_placeholder, y_placeholder, **kwarg):
     clf = RandomForestClassifier(**kwarg)
     clf.fit(x_placeholder, y_placeholder)
+
+    importances = clf.feature_importances_
+    indices = np.argsort(importances)[::-1]
+
+    # Print the feature ranking
+    print("Feature ranking:")
+
+    for f in range(x_placeholder.shape[1]):
+        print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
+
     return clf
 
 
