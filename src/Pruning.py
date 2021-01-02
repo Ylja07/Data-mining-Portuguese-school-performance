@@ -24,7 +24,7 @@ class Pruning:
         # Think about using other ways to rate the data instead of the standard accuracy.
         random_forest_grid = GridSearchCV(RandomForestClassifier(), param_grid, scoring=self.scoring).fit(self.X, self.y)
 
-        print('Best params for random forrest are: ' + str(random_forest_grid.best_params_))
+        print('Best params for random forest are: ' + str(random_forest_grid.best_params_))
 
         return random_forest_grid.best_params_
 
@@ -52,21 +52,21 @@ class Pruning:
         return best_mlp.best_params_
 
     def __adam(self):
-        adam = {'activation': ['identity', 'logistic', 'tanh', 'relu'], 'max_iter': [9000],
+        adam = {'activation': ['identity', 'logistic', 'tanh', 'relu'], 'max_iter': [90000],
                 'hidden_layer_sizes': [(1,), (2,), (3,), (4,), (5,), (6,), (7,), (8,), (9,), (10,), (11,), (12,),
                                        (13,), (14,), (15,), (16,), (17,), (18,), (19,), (20,), (21,)],
                 'solver': ['adam']}
         return GridSearchCV(MLPClassifier(), adam, scoring=self.scoring).fit(self.X, self.y)
 
     def __sgd(self):
-        sgd = {'activation': ['identity', 'logistic', 'tanh', 'relu'], 'max_iter': [9000],
+        sgd = {'activation': ['identity', 'logistic', 'tanh', 'relu'], 'max_iter': [90000],
                'hidden_layer_sizes': [(1,), (2,), (3,), (4,), (5,), (6,), (7,), (8,), (9,), (10,), (11,), (12,),
                                       (13,), (14,), (15,), (16,), (17,), (18,), (19,), (20,), (21,)],
                'solver': ['sgd'], 'learning_rate': ['constant', 'invscaling', 'adaptive']}
         return GridSearchCV(MLPClassifier(), sgd, scoring=self.scoring).fit(self.X, self.y)
 
     def __lbfgs(self):
-        lbfgs = {'activation': ['identity', 'logistic', 'tanh', 'relu'], 'max_iter': [9000],
+        lbfgs = {'activation': ['identity', 'logistic', 'tanh', 'relu'], 'max_iter': [90000],
                  'hidden_layer_sizes': [(1,), (2,), (3,), (4,), (5,), (6,), (7,), (8,), (9,), (10,), (11,), (12,),
                                         (13,), (14,), (15,), (16,), (17,), (18,), (19,), (20,), (21,)],
                  'solver': ['lbfgs']}
