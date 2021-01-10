@@ -96,8 +96,8 @@ def run(dataset_por, dataset_math, exclude, name):
 
     pruning = Pruning(scoring='roc_auc', X=X_train, y=y_train)
 
-    # forest_kargs = pruning.random_forest_hyper_parameters()
-    # forest = random_forest(X_train, y_train, **forest_kargs)
+    forest_kargs = pruning.random_forest_hyper_parameters()
+    forest = random_forest(X_train, y_train, **forest_kargs)
 
     mlp_kargs = pruning.mlp_hyper_parameters()
     mlp = neural(X_train, y_train, **mlp_kargs)
@@ -105,7 +105,7 @@ def run(dataset_por, dataset_math, exclude, name):
     # permutation(mlp, X_test, y_test)
 
     # Get accuracy
-    # predict_score(forest, X_test, X2, y_test, y2, "Random Forest " + name)
+    predict_score(forest, X_test, X2, y_test, y2, "Random Forest " + name)
     predict_score(mlp, X_test, X2, y_test, y2, "MLP " + name)
 
 
