@@ -21,14 +21,18 @@ class Pruning:
         param_grid = {'max_depth': np.arange(3, 10), 'min_samples_split': [10, 15, 25, 35, 50, 75],
                       'min_samples_leaf': [5, 10, 15, 20, 25]}
 
-        # Think about using other ways to rate the data instead of the standard accuracy.
-        random_forest_grid = GridSearchCV(RandomForestClassifier(), param_grid, scoring=self.scoring).fit(self.X, self.y)
+        random_forest_grid = GridSearchCV(RandomForestClassifier(), param_grid, scoring=self.scoring).fit(self.X,
+                                                                                                          self.y)
 
         print('Best params for random forest are: ' + str(random_forest_grid.best_params_))
 
         return random_forest_grid.best_params_
 
     def mlp_hyper_parameters(self):
+        """
+        First split up all the different solvers and let them run in three separated threads.
+        This will speed up the process of finding the hyperparameter immensely.
+        """
         best_mlp = None
         # Multithreading awesomeness 😎
         with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -42,6 +46,7 @@ class Pruning:
         all_mlp = [mlp_lbfgs_result, mlp_sgd_result, mlp_adam_result]
         previous = 0
 
+        # Find the best scoring MLP.
         for mlp in all_mlp:
             if mlp.best_score_ > previous:
                 best_mlp = mlp

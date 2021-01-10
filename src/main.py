@@ -10,6 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from Pruning import Pruning
 from DataPreparation import DataPreparation
+from sklearn.inspection import permutation_importance
 
 
 # load data
@@ -21,14 +22,14 @@ def random_forest(x_placeholder, y_placeholder, **kwarg):
     clf = RandomForestClassifier(**kwarg)
     clf.fit(x_placeholder, y_placeholder)
 
-    importances = clf.feature_importances_
-    indices = np.argsort(importances)[::-1]
-
-    # Print the feature ranking
-    print("Feature ranking:")
-
-    for f in range(x_placeholder.shape[1]):
-        print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
+    # importances = clf.feature_importances_
+    # indices = np.argsort(importances)[::-1]
+    #
+    # # Print the feature ranking
+    # print("Feature ranking:")
+    #
+    # for f in range(x_placeholder.shape[1]):
+    #     print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
 
     return clf
 
@@ -41,6 +42,7 @@ def split_data(x_data, y_data, test_size):
 def neural(x_placeholder, y_placeholder, **kwarg):
     mlp = MLPClassifier(**kwarg)
     mlp.fit(x_placeholder, y_placeholder)
+
     return mlp
 
 
@@ -54,12 +56,32 @@ def predict_score(clf, x1, x2, y1, y2, clf_identifier):
 
 
 def prep_multi_run(basic_G3=True):
+    """
+    Prepare the data for the runs.
+    If this isn't done it will crash because of multiple attempts to change values.
+    """
     data_por = DataPreparation(dataset)
     por = data_por.set_feature_values(basic_G3)
     data_math = DataPreparation(dataset2)
     math = data_math.set_feature_values(basic_G3)
 
     return por, math
+
+
+def permutation(mlp, X_test, y_test):
+    """
+    Get the feature importance of the MLP.
+    """
+    result = permutation_importance(mlp, X_test, y_test, n_repeats=10,
+                                    random_state=42, n_jobs=2)
+    sorted_idx = result.importances_mean.argsort()
+
+    fig, ax = plt.subplots()
+    ax.boxplot(result.importances[sorted_idx].T,
+               vert=False, labels=X_test.columns[sorted_idx])
+    ax.set_title("Permutation Importances (test set)")
+    fig.tight_layout()
+    plt.show()
 
 
 def run(dataset_por, dataset_math, exclude, name):
@@ -74,14 +96,16 @@ def run(dataset_por, dataset_math, exclude, name):
 
     pruning = Pruning(scoring='roc_auc', X=X_train, y=y_train)
 
-    forest_kargs = pruning.random_forest_hyper_parameters()
-    forest = random_forest(X_train, y_train, **forest_kargs)
+    # forest_kargs = pruning.random_forest_hyper_parameters()
+    # forest = random_forest(X_train, y_train, **forest_kargs)
 
     mlp_kargs = pruning.mlp_hyper_parameters()
     mlp = neural(X_train, y_train, **mlp_kargs)
 
+    # permutation(mlp, X_test, y_test)
+
     # Get accuracy
-    predict_score(forest, X_test, X2, y_test, y2, "Random Forest " + name)
+    # predict_score(forest, X_test, X2, y_test, y2, "Random Forest " + name)
     predict_score(mlp, X_test, X2, y_test, y2, "MLP " + name)
 
 
